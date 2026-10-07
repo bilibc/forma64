@@ -63,6 +63,21 @@ export default {
       }
     }
 
+    // prueba manual: /test?k=f64-probar-2026  (envía un aviso ya mismo)
+    if (request.method === 'GET' && url.pathname === '/test') {
+      if (url.searchParams.get('k') !== 'f64-probar-2026') return cors(new Response('no', { status: 403 }));
+      const list = await env.PUSH_SUBS.list({ limit: 1000 });
+      const estados = [];
+      for (const { name } of list.keys) {
+        const rec = await env.PUSH_SUBS.get(name, 'json');
+        if (rec && rec.subscription) {
+          const r = await sendPush(env, rec.subscription, name);
+          estados.push(r ? r.status : 'err');
+        }
+      }
+      return cors(new Response('suscripciones: ' + list.keys.length + ', respuestas push: [' + estados.join(',') + '] (404/410 = firma VAPID aceptada, endpoint inventado)'));
+    }
+
     return cors(new Response('Forma64 push relay'));
   },
 

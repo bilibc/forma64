@@ -10,7 +10,7 @@ crons = ["*/30 * * * *"]
 
 [[kv_namespaces]]
 binding = "PUSH_SUBS"
-id = "PEGA_AQUI_EL_ID_DEL_KV"
+id = "ddfc19bdc1484a5bb2676021d73a440a"
 
 [vars]
 VAPID_PUBLIC_KEY = "BMg2VZ_iggrZ1e2Dd7ddu3VRZuE8o3jN70sY_bnsU4wm21D8V4B9YmnD3oRUGPbhyl2WBedD6nEtXTBDYfsbgTg"

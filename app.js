@@ -361,7 +361,7 @@ function msgFor(slot) {
 
 /* ---------- avisos: push real (pantalla bloqueada) + fallback local ---------- */
 const PUSH_VAPID_PUBLIC = 'BMg2VZ_iggrZ1e2Dd7ddu3VRZuE8o3jN70sY_bnsU4wm21D8V4B9YmnD3oRUGPbhyl2WBedD6nEtXTBDYfsbgTg';
-const PUSH_WORKER_URL = 'https://TU-WORKER.TU-SUBDOMINIO.workers.dev'; // ← pega aquí la URL de tu worker (guía PUSH-ACTIVACION.md)
+const PUSH_WORKER_URL = 'https://forma64-push.pobicasas.workers.dev'; // relay de avisos (Cloudflare)
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
