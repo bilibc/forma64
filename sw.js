@@ -1,5 +1,5 @@
 /* Forma64 · service worker: app instalada + offline + avisos push */
-const CACHE = 'forma64-v4';
+const CACHE = 'forma64-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -79,18 +79,20 @@ self.addEventListener('activate', e => {
   );
 });
 
+/* Estrategia: red primero (la app siempre se actualiza sola),
+   y si no hay red, la caché guardada en la última visita. */
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then(hit =>
-      hit || fetch(e.request).then(res => {
+    fetch(e.request).then(res => {
+      if (res && res.ok && new URL(e.request.url).origin === location.origin) {
         const copy = res.clone();
-        if (res.ok && new URL(e.request.url).origin === location.origin) {
-          caches.open(CACHE).then(c => c.put(e.request, copy));
-        }
-        return res;
-      })
-    ).catch(() => caches.match('./index.html'))
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+      }
+      return res;
+    }).catch(() =>
+      caches.match(e.request).then(hit => hit || caches.match('./index.html'))
+    )
   );
 });
 
