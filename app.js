@@ -359,13 +359,77 @@ function msgFor(slot) {
   return MSG[SLOTS[slot][0]][(dayN * 3 + slot) % MSG[SLOTS[slot][0]].length];
 }
 
+/* ---------- avisos: push real (pantalla bloqueada) + fallback local ---------- */
+const PUSH_VAPID_PUBLIC = 'BMg2VZ_iggrZ1e2Dd7ddu3VRZuE8o3jN70sY_bnsU4wm21D8V4B9YmnD3oRUGPbhyl2WBedD6nEtXTBDYfsbgTg';
+const PUSH_WORKER_URL = 'https://TU-WORKER.TU-SUBDOMINIO.workers.dev'; // ← pega aquí la URL de tu worker (guía PUSH-ACTIVACION.md)
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from(raw, c => c.charCodeAt(0));
+}
+const pushConfigured = () => PUSH_WORKER_URL.indexOf('TU-WORKER') === -1;
+const pushOn = () => localStorage.getItem('f64-push') === '1';
+
 function notifState() {
   const b = $('#btn-notif');
   if (!b) return;
-  if (!('Notification' in window)) { b.classList.add('off'); b.title = 'Este navegador no permite avisos'; return; }
-  const on = localStorage.getItem('f64-notif') === 'on';
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) { b.classList.add('off'); b.title = 'Este navegador no permite avisos'; return; }
+  const on = pushOn() || (Notification.permission === 'granted' && localStorage.getItem('f64-notif') === 'on');
   b.classList.toggle('on', on);
-  b.title = on ? 'Avisos de motivación activados' : 'Activar avisos de motivación';
+  b.title = on ? 'Avisos activados 3 veces al día · tocar para apagar' : 'Activar avisos 3 veces al día';
+}
+
+async function notifyWorker(sub) {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
+  const res = await fetch(PUSH_WORKER_URL + '/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subscription: sub.toJSON(), tz }),
+  });
+  if (!res.ok) throw new Error('worker ' + res.status);
+}
+
+async function startPush() {
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(PUSH_VAPID_PUBLIC) });
+  }
+  await notifyWorker(sub);
+}
+
+async function stopPush() {
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const sub = reg ? await reg.pushManager.getSubscription() : null;
+    if (sub) {
+      const endpoint = sub.endpoint;
+      await sub.unsubscribe();
+      if (pushConfigured()) {
+        await fetch(PUSH_WORKER_URL + '/subscribe', {
+          method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint }),
+        });
+      }
+    }
+  } catch (e) { /* nada */ }
+}
+
+async function syncPush() {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      localStorage.setItem('f64-push', '1');
+      if (notifTimer) { clearTimeout(notifTimer); notifTimer = null; } // sin doble aviso
+      if (pushConfigured()) await notifyWorker(sub).catch(() => {}); // renueva la suscripción
+    } else {
+      localStorage.removeItem('f64-push');
+    }
+  } catch (e) { /* nada */ }
+  notifState();
 }
 
 function nextSlotInfo() {
@@ -392,6 +456,7 @@ function fireNotif(slot) {
 
 let notifTimer = null;
 function scheduleNext() {
+  if (pushOn()) return;                  // push real: los avisos los manda Cloudflare
   if (localStorage.getItem('f64-notif') !== 'on') return;
   const nx = nextSlotInfo();
   if (!nx) return;
@@ -404,15 +469,48 @@ function scheduleNext() {
   }, ms);
 }
 
-function notifToggle() {
-  if (!('Notification' in window)) { alert('Este navegador no permite avisos en esta pantalla. Usa la app instalada en el móvil.'); return; }
+async function notifToggle() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+    alert('Este navegador no permite avisos. Usa la app instalada en el móvil.');
+    return;
+  }
+  // apagar si ya está encendido
+  if (pushOn() || (Notification.permission === 'granted' && localStorage.getItem('f64-notif') === 'on')) {
+    if (confirm('¿Apagar los avisos de motivación?')) {
+      localStorage.removeItem('f64-push');
+      localStorage.removeItem('f64-notif');
+      if (notifTimer) { clearTimeout(notifTimer); notifTimer = null; }
+      await stopPush();
+      notifState();
+    }
+    return;
+  }
   if (Notification.permission === 'denied') {
     alert('Bloqueaste los avisos. Puedes activarlos desde los ajustes del navegador si cambias de idea.');
     return;
   }
-  const done = () => { localStorage.setItem('f64-notif', 'on'); scheduleNext(); notifState(); };
-  if (Notification.permission === 'granted') { done(); return; }
-  Notification.requestPermission().then(p => { if (p === 'granted') done(); });
+  if (Notification.permission !== 'granted') {
+    const p = await Notification.requestPermission();
+    if (p !== 'granted') { alert('Sin permiso no hay avisos. Si te arrepientes, activa las notificaciones en los ajustes del navegador.'); return; }
+  }
+  // 1) push real: llega con la pantalla bloqueada
+  if (pushConfigured()) {
+    try {
+      await startPush();
+      localStorage.setItem('f64-push', '1');
+      localStorage.removeItem('f64-notif');
+      if (notifTimer) { clearTimeout(notifTimer); notifTimer = null; }
+      notifState();
+      return;
+    } catch (err) { console.warn('push falló', err); }
+  }
+  // 2) fallback: avisos mientras la app está abierta
+  localStorage.setItem('f64-notif', 'on');
+  scheduleNext();
+  notifState();
+  if (!pushConfigured()) {
+    alert('Avisos de motivación activados (se disparan con la app abierta).\n\nPara que te lleguen con la pantalla bloqueada, sigue la guía PUSH-ACTIVACION.md del repo.');
+  }
 }
 
 /* ---------- pestañas ---------- */
@@ -513,13 +611,10 @@ function stagger() {
 /* ---------- arranque ---------- */
 $('#btn-print').addEventListener('click', () => { renderQr(); setTimeout(() => window.print(), 60); });
 
-// si el usuario ya dio permiso, reactivar avisos
-if ('Notification' in window && Notification.permission === 'granted') {
-  localStorage.setItem('f64-notif', 'on');
-  scheduleNext();
-} else {
-  notifState();
-}
+// arranque de avisos: si ya tienes push, se renueva; si no, temporizador local
+notifState();
+scheduleNext();
+syncPush();
 
 renderQr();
 applyView();

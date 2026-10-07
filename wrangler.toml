@@ -1,0 +1,20 @@
+# Forma64 · worker de avisos (Cloudflare)
+# Este archivo solo hace falta si despliegas el worker con `wrangler`.
+# Por el panel de Cloudflare se configura igual con los mismos nombres.
+name = "forma64-push"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+[triggers]
+crons = ["*/30 * * * *"]
+
+[[kv_namespaces]]
+binding = "PUSH_SUBS"
+id = "PEGA_AQUI_EL_ID_DEL_KV"
+
+[vars]
+VAPID_PUBLIC_KEY = "BMg2VZ_iggrZ1e2Dd7ddu3VRZuE8o3jN70sY_bnsU4wm21D8V4B9YmnD3oRUGPbhyl2WBedD6nEtXTBDYfsbgTg"
+
+# La clave privada VAPID_PRIVATE_KEY NO se guarda en este repo:
+# con wrangler -> `wrangler secret put VAPID_PRIVATE_KEY`
+# en el panel  -> Settings > Variables and Secrets > Add secret
