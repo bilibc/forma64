@@ -3,314 +3,209 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Forma64 · Tu plan a 64 kg</title>
-<meta name="description" content="Tu plan diario: dos comidas sencillas con productos de Mercadona y de la carnicería/pescadería, rutina de casa, agua, sueño, motivación y QR para la nevera.">
-<meta name="theme-color" content="#163300">
+<title>FORJA</title>
+<meta name="description" content="Tu forma de vida diaria: entreno en casa, proteína y agua, peso, fotos y mensajes de entrenador exigente.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#14110F">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Forma64">
+<meta name="apple-mobile-web-app-title" content="FORJA">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="app">
 
   <!-- ============ HOY ============ -->
-  <section class="screen" id="screen-hoy">
-    <header class="hero">
-      <div class="hero-top">
-        <div>
-          <p class="hero-eyebrow" id="today-label">MARTES · 07 OCT</p>
-          <h1 class="hero-title" id="hero-title">Buenos días, Mario</h1>
-        </div>
-        <button class="icon-btn" id="btn-reset" aria-label="Reiniciar el día" title="Reiniciar marcas de hoy">↺</button>
+  <section class="screen active" id="screen-hoy">
+    <header class="top">
+      <div>
+        <p class="eyebrow" id="hoy-fecha">MARTES 17 NOV</p>
+        <h1 class="big" id="hoy-dia">Día 1</h1>
+        <p class="sub" id="hoy-fase">Fase 1 · semana 1</p>
       </div>
-      <p class="hero-sub">Hoy: 2 comidas · 1.150 kcal · 2,5 L de agua · 8 mil pasos.</p>
-
-      <div class="hero-ring-wrap">
-        <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
-          <circle class="ring-track" cx="100" cy="100" r="88"/>
-          <circle class="ring-fill" id="ring-weight" cx="100" cy="100" r="88"/>
-        </svg>
-        <div class="hero-ring-inner">
-          <p class="ring-kg" id="ring-kg">72<span>kg</span></p>
-          <p class="ring-meta" id="ring-rest">faltan 8 kg</p>
-        </div>
-      </div>
-      <div class="hero-chips">
-        <div class="chip">
-          <span class="chip-k" id="chip-kcal">0</span>
-          <span class="chip-l">kcal comidas</span>
-        </div>
-        <div class="chip">
-          <span class="chip-k">≈ 2.400</span>
-          <span class="chip-l">kcal a gastar</span>
-        </div>
-        <div class="chip chip-lime">
-          <span class="chip-k" id="chip-deficit">1.250</span>
-          <span class="chip-l">déficit/día</span>
-        </div>
-      </div>
-      <button class="weight-btn" id="btn-weight">peso de hoy: 72,0 kg · editar</button>
+      <button class="icon-btn" id="btn-notif" aria-label="Avisos del entrenador">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16Z M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
     </header>
 
-    <main class="content">
-      <article class="card tip-card" id="card-msg">
-        <div class="card-head">
-          <p class="msg-when" id="msg-when">Mensaje de la mañana</p>
-          <button class="msg-bell" id="btn-notif" aria-label="Activar avisos de motivación">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 1 0-12 0c0 6-2 7-2 7h16s-2-1-2-7z"/><path d="M10.5 20a1.8 1.8 0 0 0 3 0"/></svg>
-          </button>
-        </div>
-        <p class="tip" id="tip-msg">Carga el mensaje…</p>
+    <div class="content">
+      <article class="coach">
+        <p class="coach-when" id="coach-when">EL ENTRENADOR · MAÑANA</p>
+        <p class="coach-msg" id="coach-msg"></p>
       </article>
 
-      <div class="week-bar" id="week-bar" aria-label="Los 7 días del plan"></div>
+      <div class="streak">
+        <div class="streak-num"><b id="racha">0</b><span>días de racha</span></div>
+        <div class="week" id="semana"></div>
+      </div>
+      <p class="aviso-fallo" id="aviso-fallo" hidden></p>
 
-      <article class="card">
-        <div class="card-head">
-          <h2>Objetivos de hoy</h2>
-        </div>
-        <div class="goal-row" id="goal-cal">
-          <div class="goal-ico goal-ico-lime">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="4.5"/><path d="M12 13v6m-3.5-3h7"/></svg>
+      <h2 class="h2">Lo que toca hoy</h2>
+      <div class="habits" id="habitos"></div>
+
+      <article class="card" id="card-peso">
+        <div class="row-between">
+          <div>
+            <p class="label">Peso de esta mañana</p>
+            <p class="small" id="peso-media">Pésate al levantarte, antes de beber nada.</p>
           </div>
-          <div class="goal-main">
-            <p class="goal-name">Comer ≤ 1.150 kcal</p>
-            <div class="bar"><i id="bar-cal"></i></div>
-          </div>
-          <p class="goal-num" id="goal-cal-num">0 / 1.150</p>
-        </div>
-        <div class="goal-row" id="goal-water">
-          <button class="goal-ico goal-ico-blue" id="btn-water" aria-label="Añadir un vaso de agua">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s5 6 5 10a5 5 0 0 1-10 0c0-4 5-10 5-10z"/></svg>
-          </button>
-          <div class="goal-main">
-            <p class="goal-name">Agua · 2,5 L</p>
-            <div class="bar"><i id="bar-water"></i></div>
-          </div>
-          <p class="goal-num"><span id="goal-water-num">0,0</span> L</p>
-        </div>
-        <div class="goal-row" id="goal-steps">
-          <button class="goal-ico goal-ico-steps" id="btn-steps" aria-label="Sumar 500 pasos">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"/><path d="M12 6v5m-8 8 3-3h4l2 4 3-6 4 4"/></svg>
-          </button>
-          <div class="goal-main">
-            <p class="goal-name">Pasos · 8–10 mil</p>
-            <div class="bar"><i id="bar-steps"></i></div>
-          </div>
-          <p class="goal-num"><span id="goal-steps-num">0</span></p>
-        </div>
-        <div class="goal-row" id="goal-sleep">
-          <button class="goal-ico goal-ico-dim" id="btn-sleep" aria-label="Marcar hora de ir a la cama">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
-          </button>
-          <div class="goal-main">
-            <p class="goal-name">Sueño · 8 h</p>
-            <p class="goal-hint" id="sleep-hint">Cama a las 23:00 · alarma 07:00</p>
-          </div>
-          <p class="goal-num" id="sleep-state">pendiente</p>
+          <form class="peso-form" id="peso-form">
+            <input id="peso-input" type="text" inputmode="decimal" placeholder="70,0" aria-label="Peso en kilos">
+            <button type="submit" class="btn-small">Guardar</button>
+          </form>
         </div>
       </article>
 
-      <article class="card" id="card-libre"></article>
-
-      <article class="card">
-        <div class="card-head">
-          <h2>Comidas de hoy</h2>
-          <a class="card-link" href="#comidas" data-go="comidas">Ver semana</a>
-        </div>
-        <div id="today-meals"></div>
-      </article>
-    </main>
+      <article class="card domingo" id="card-domingo" hidden></article>
+    </div>
   </section>
 
-  <!-- ============ COMIDAS ============ -->
-  <section class="screen" id="screen-comidas">
-    <header class="page-head">
-      <p class="hero-eyebrow">PLAN DE COMIDAS</p>
-      <h1 class="page-title" id="comidas-title">Lunes</h1>
-      <p class="hero-sub">Solo dos comidas al día: comida y cena. Sin desayuno ni aperitivos, y sin compensar: el día baja de verdad.</p>
+  <!-- ============ ENTRENO ============ -->
+  <section class="screen" id="screen-entreno">
+    <header class="top">
+      <div>
+        <p class="eyebrow">FUERZA EN CASA · SIN MATERIAL</p>
+        <h1 class="big" id="ent-titulo">Entreno A</h1>
+        <p class="sub" id="ent-sub">25 min · 3 rondas</p>
+      </div>
     </header>
-    <main class="content">
-      <div class="day-nav" id="day-nav"></div>
-      <div class="kcal-status" id="kcal-status"></div>
-      <div id="meal-list"></div>
-      <article class="card tips-comidas">
-        <h2>Reglas que funcionan</h2>
-        <ul class="rules">
-          <li>Dos comidas al día solo funcionan si son completas: proteína, verdura y algo de hidrato.</li>
-          <li>Si te sobra mucha hambre, 1 huevo duro o un yogur griego no rompen nada.</li>
-          <li>La proteína es lo que evita que pierdas músculo estando a déficit de verdad.</li>
-          <li>Pesa la pasta y el arroz en seco: al cocer triplican.</li>
-          <li>El café y las infusiones no cuentan (sin azúcar).</li>
-        </ul>
+    <div class="content">
+      <div class="seg" role="tablist" id="ent-modo">
+        <button class="seg-btn on" data-modo="completo">Completo</button>
+        <button class="seg-btn" data-modo="minimo">Mínimo 10 min</button>
+      </div>
+      <p class="small" id="ent-explica"></p>
+      <ol class="ejercicios" id="ejercicios"></ol>
+
+      <article class="card timer">
+        <p class="label">Descanso entre rondas</p>
+        <div class="timer-row">
+          <span class="timer-num" id="timer-num">1:00</span>
+          <button class="btn-small" id="timer-btn">Empezar</button>
+        </div>
       </article>
-    </main>
+
+      <button class="btn-big" id="ent-hecho">Entreno hecho</button>
+
+      <h2 class="h2">Tu semana</h2>
+      <div class="plan-semana" id="plan-semana"></div>
+      <p class="small">Cada semana suben las repeticiones solas. En la semana 3 pasas a 4 rondas. Cuando quieras más, unas mancuernas o una barra de dominadas (unos 30 €) y lo cambio.</p>
+    </div>
   </section>
 
-  <!-- ============ ENTRENAR ============ -->
-  <section class="screen" id="screen-entrenar">
-    <header class="page-head">
-      <p class="hero-eyebrow">SIN GIMNASIO</p>
-      <h1 class="page-title">Muévete en casa</h1>
-      <p class="hero-sub">4 días de fuerza + pasos a diario. Con tu peso basta: estás fofo, lo que necesitas es tensar.</p>
+  <!-- ============ COMIDA ============ -->
+  <section class="screen" id="screen-comida">
+    <header class="top">
+      <div>
+        <p class="eyebrow">DOS COMIDAS · SIN DESAYUNO</p>
+        <h1 class="big">1.800 kcal</h1>
+        <p class="sub">130 g de proteína · 2 litros de agua</p>
+      </div>
     </header>
-    <main class="content">
-      <article class="card">
-        <div class="card-head">
-          <h2>La semana</h2>
-        </div>
-        <div id="week-routine"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head">
-          <h2>Rutina A · Lunes, miércoles y viernes</h2>
-          <span class="tag">≈ 250 kcal</span>
-        </div>
-        <p class="card-note">Dura ~35 min. Descansa 60–90 s entre series. Cuando completes todo un día, sube 2 reps o 5 s la siguiente vez.</p>
-        <div id="routine-a"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head">
-          <h2>Sábado · Cardio largo</h2>
-          <span class="tag">≈ 350 kcal</span>
-        </div>
-        <p class="card-note">Una hora caminando a buen ritmo (o bici / natación). Lleva agua y un pódcast. Se compensa solo con la comida libre del sábado.</p>
-      </article>
-
-      <article class="card">
-        <div class="card-head">
-          <h2>Movimiento de cada día</h2>
-        </div>
-        <ul class="rules">
-          <li>8.000–10.000 pasos: unos 350 kcal. Casi una de tus comidas.</li>
-          <li>10 min andando después de la comida y de la cena.</li>
-          <li>Escaleras siempre, ascensor nunca.</li>
-          <li>De pie 2 min cada hora que estés sentado.</li>
-          <li>Martes, jueves y domingo son descanso: se camina, no se entrena.</li>
-        </ul>
-      </article>
-    </main>
-  </section>
-
-  <!-- ============ PLAN ============ -->
-  <section class="screen" id="screen-plan">
-    <header class="page-head">
-      <p class="hero-eyebrow">LOS NÚMEROS</p>
-      <h1 class="page-title">El plan a 64 kg</h1>
-      <p class="hero-sub">De 72 a 64 kg. Recálculo hecho para 22 años, 1,76 m y tu cuerpo.</p>
-    </header>
-    <main class="content">
-      <article class="card">
-        <div class="card-head"><h2>Cuánto comer y cuánto gastar</h2></div>
-        <div class="stat-grid">
-          <div class="stat"><span class="stat-k">1.715</span><span class="stat-l">kcal gasta tu cuerpo solo (TMB, 22 años · 72 kg · 1,76 m)</span></div>
-          <div class="stat"><span class="stat-k">≈ 2.400</span><span class="stat-l">kcal gastas al día con pasos + rutina + vida normal</span></div>
-          <div class="stat stat-good"><span class="stat-k">1.150</span><span class="stat-l">kcal que comes (comida + cena) · déficit de 1.250</span></div>
-        </div>
-        <p class="card-note">Sin desayuno ni merienda, y sin compensar: el día baja de ~1.500 a ~1.150 kcal. 1.250 kcal × 30 días ≈ 37.000 kcal ≈ 4,5–5 kg al mes. La primera semana se van además 1–1,5 kg de líquido. Realista: <strong>64 kg en 8–10 semanas</strong>. Dos comidas al día tan por debajo de 1.200 kcal solo son sanas si son completas: por eso la comida y la cena llevan siempre proteína, verdura y un hidrato.</p>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Reparto del plato</h2></div>
-        <div class="macro-bars">
-          <div class="macro">
-            <div class="macro-line"><span>Proteína</span><span class="macro-v">≈ 105 g</span></div>
-            <div class="bar"><i style="width:47%"></i></div>
-          </div>
-          <div class="macro">
-            <div class="macro-line"><span>Hidratos</span><span class="macro-v">≈ 110 g</span></div>
-            <div class="bar"><i style="width:38%"></i></div>
-          </div>
-          <div class="macro">
-            <div class="macro-line"><span>Grasa</span><span class="macro-v">≈ 45 g</span></div>
-            <div class="bar"><i style="width:15%"></i></div>
-          </div>
-        </div>
-        <p class="card-note">La proteína no es un capricho: con un déficit tan alto, es lo único que protege el músculo que tienes. Por eso las dos comidas llevan una ración grande.</p>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Agua y sueño</h2></div>
-        <ul class="rules">
-          <li><strong>Agua:</strong> 2,5 L al día (3 L los días de entreno). Truco: bote de 500 ml, 5 al día.</li>
-          <li><strong>Sueño:</strong> 8 h. Cama a las 23:00, pantallas fuera 30 min antes, alarma a las 07:00.</li>
-          <li><strong>Café</strong> sí, sin azúcar, antes de las 17:00.</li>
-          <li>Poco sueño sube la hormona del hambre: dormir también es dieta.</li>
+    <div class="content">
+      <article class="card plato">
+        <p class="label">Cómo se monta cada plato</p>
+        <ul class="plato-lista">
+          <li><b>Proteína, la mitad del plato.</b> 200–250 g de pollo, pavo, ternera o pescado, o 4 huevos, o 2 latas de atún.</li>
+          <li><b>Hidrato, un puño.</b> Arroz, pasta, patata o pan. Más el día que entrenas.</li>
+          <li><b>Verdura o ensalada</b> lo que quieras. Nada de brócoli, sopa ni puré.</li>
+          <li><b>Aceite de oliva</b>, una cucharada.</li>
         </ul>
       </article>
 
-      <article class="card card-libre">
-        <div class="card-head"><h2>El día libre</h2></div>
-        <p class="card-note">El <strong>sábado</strong> es tu día. Una comida libre, la cena: el plato que te apetezca (pizza, hamburguesa, lo que sea) + un postre. El resto del sábado, normal, y el domingo se vuelve al plan. <em>Un día libre hace sostenible la semana. Dos la descuadran.</em></p>
-      </article>
+      <h2 class="h2">Platos que te encajan</h2>
+      <div class="comidas" id="comidas"></div>
 
-      <article class="card qr-card">
-        <div class="card-head">
-          <h2>QR de la nevera</h2>
-          <span class="tag">imprime y pega</span>
-        </div>
-        <p class="card-note">Escanea el código con la cámara del móvil: te dice la comida que toca hoy. Cuando la marques, se registra y al escanear otra vez te sale la cena. Así cada día.</p>
-        <div class="qr-wrap">
-          <div class="qr" id="qr"><p class="qr-loading">Preparando tu QR…</p></div>
-          <div class="qr-actions">
-            <button class="done-btn" id="btn-print">Imprimir para la nevera</button>
-          </div>
-        </div>
-        <p class="card-note qr-hint" id="qr-hint">El QR lleva la dirección de esta app.</p>
+      <article class="card">
+        <p class="label">Cuando comes con tu novia o fuera</p>
+        <ul class="plato-lista">
+          <li>Come lo que haya, pero <b>empieza por la proteína</b>.</li>
+          <li>Para cuando estés lleno al 80 %. Así lo hacen en Okinawa, la gente que más vive del mundo.</li>
+          <li>Un plato, sin entrantes de picar y sin repetir.</li>
+          <li>Ese día, agua igual: los 2 litros no se negocian.</li>
+        </ul>
       </article>
 
       <article class="card">
-        <div class="card-head"><h2>Instalar como app</h2></div>
-        <ul class="rules">
-          <li><strong>iPhone (Safari):</strong> Compartir → «Añadir a pantalla de inicio».</li>
-          <li><strong>Android (Chrome):</strong> menú ⋮ → «Instalar app» o «Añadir a pantalla de inicio».</li>
-          <li>Funciona sin conexión una vez instalada.</li>
+        <p class="label">Lista de la compra · Mercadona</p>
+        <div class="compra" id="compra"></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ PROGRESO ============ -->
+  <section class="screen" id="screen-progreso">
+    <header class="top">
+      <div>
+        <p class="eyebrow">LOS NÚMEROS NO MIENTEN</p>
+        <h1 class="big" id="prog-peso">— kg</h1>
+        <p class="sub" id="prog-sub">Media de los últimos 7 días</p>
+      </div>
+    </header>
+    <div class="content">
+      <article class="card">
+        <div class="row-between"><p class="label">Peso</p><p class="small" id="prog-obj"></p></div>
+        <div class="grafica" id="grafica"></div>
+      </article>
+
+      <div class="stats" id="stats"></div>
+
+      <article class="card">
+        <div class="row-between">
+          <div><p class="label">Cintura (a la altura del ombligo)</p><p class="small" id="cintura-ult">Mídela una vez por semana, el domingo.</p></div>
+          <form class="peso-form" id="cintura-form">
+            <input id="cintura-input" type="text" inputmode="decimal" placeholder="80" aria-label="Cintura en centímetros">
+            <button type="submit" class="btn-small">Guardar</button>
+          </form>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="row-between">
+          <p class="label">Fotos: la primera contra la última</p>
+          <label class="btn-small" for="foto-input">Añadir foto</label>
+          <input type="file" id="foto-input" accept="image/*" capture="user" hidden>
+        </div>
+        <div class="fotos" id="fotos"><p class="small">Hazte una foto de frente cada domingo, con la misma luz y la misma ropa.</p></div>
+      </article>
+
+      <h2 class="h2">El camino</h2>
+      <div class="fases" id="fases"></div>
+
+      <article class="card">
+        <p class="label">Tus tres metas para dentro de un año</p>
+        <ul class="metas">
+          <li>Vivir y trabajar desde cualquier parte del mundo.</li>
+          <li>Estar en tu mejor forma física, siempre.</li>
+          <li>Facturar 10.000 € o más al mes.</li>
         </ul>
       </article>
-    </main>
-  </section>
 
-  <!-- ============ NEVERA (se abre al escanear el QR) ============ -->
-  <section class="screen" id="screen-nevera">
-    <header class="nevera-head">
-      <div class="hero-top">
-        <div>
-          <p class="hero-eyebrow" id="nevera-date">LA NEVERA · MARTES</p>
-          <h1 class="hero-title" id="nevera-title">Hola, Mario.</h1>
-        </div>
-        <button class="icon-btn" id="nevera-close" aria-label="Volver a la app">✕</button>
+      <div class="ajustes">
+        <button class="link" id="btn-objetivo">Cambiar peso objetivo</button>
+        <button class="link" id="btn-copia">Copiar mis datos</button>
       </div>
-      <p class="hero-sub" id="nevera-sub">Esto es lo que toca ahora.</p>
-      <div class="nevera-progress" id="nevera-progress"></div>
-    </header>
-    <main class="content" id="nevera-content"></main>
+    </div>
   </section>
 
-  <!-- ============ NAV ============ -->
   <nav class="tabbar" id="tabbar">
-    <button class="tab active" data-screen="hoy"><span class="tab-ico">◎</span><span>Hoy</span></button>
-    <button class="tab" data-screen="comidas"><span class="tab-ico">▦</span><span>Comidas</span></button>
-    <button class="tab" data-screen="entrenar"><span class="tab-ico">↗</span><span>Entrenar</span></button>
-    <button class="tab" data-screen="plan"><span class="tab-ico">∑</span><span>Plan</span></button>
+    <button class="tab active" data-screen="hoy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-8Z"/></svg><span>Hoy</span></button>
+    <button class="tab" data-screen="entreno"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/></svg><span>Entreno</span></button>
+    <button class="tab" data-screen="comida"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 6V3M9 13h6"/></svg><span>Comida</span></button>
+    <button class="tab" data-screen="progreso"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 15l4-4 3 3 5-6"/></svg><span>Progreso</span></button>
   </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 
-<!-- bloque solo para imprimir el QR -->
-<div id="qr-print">
-  <h1>Forma64 · la nevera</h1>
-  <p>Escanea con la cámara del móvil cada vez que quieras saber qué toca comer.</p>
-  <div id="qr-print-img"></div>
-  <p class="print-foot">forma64 app · Mario</p>
-</div>
-
-<script src="qrcode.min.js"></script>
+<script src="mensajes.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

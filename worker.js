@@ -94,7 +94,7 @@ export default {
       const hm = now.toLocaleTimeString('en-GB', {
         timeZone: rec.tz || 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hour12: false,
       });
-      if (hm === '09:00' || hm === '14:30' || hm === '21:00') {
+      if (hm === '10:30' || hm === '15:00' || hm === '23:00') {
         jobs.push(sendPush(env, rec.subscription, name));
       }
     }
